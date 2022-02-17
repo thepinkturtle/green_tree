@@ -1,0 +1,729 @@
+{#- This is a Jinja template - Flask uses Jinja as its templating engine. Jinja
+will process this file looking for directives to define a template based on the
+passed-in variables. This template relies on the `table`, `header`, and
+`username` variables to be declared. A Jinja directive will start with a "{%"
+and Jinja comments will begin with a "{#". Both are ended with the same symbol
+and the closing brace "}". If a dash "-" is provided before the opening or
+closing symbol for a directive, Jinja will ignore all whitespace up to that side
+of the directive in the template. -#}
+<!DOCTYPE html>
+<html
+  xmlns:mso="urn:schemas-microsoft-com:office:office"
+  xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"
+>
+  <head>
+    <title>EV Trip Planning</title>
+    <link rel="stylesheet" href="/static/style.css" />
+
+    <!-- Flask map tutorial source:  https://jonathansoma.com/tutorials/webapps/mapping-our-schools/-->
+    <link
+      rel="stylesheet"
+      href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css"
+    />
+
+    <!-- Latest compiled and minified CSS -->
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css"
+    />
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+
+    <!-- Slider -->
+    <script src="https://cdnjs.com/libraries/bootstrap-slider"></script>
+    <style>
+      body,
+      html {
+        height: 100%;
+        margin: 0;
+        font: 400 15px/1.8 "Lato", sans-serif;
+        color: #777;
+        scroll-behavior: smooth;
+      }
+
+      .bgimg-1,
+      .bgimg-2,
+      .bgimg-3 {
+        position: relative;
+        opacity: 0.65;
+        background-attachment: fixed;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+      .bgimg-1 {
+        background-image: url("/static/images/sung-wang.jpg");
+        min-height: 400px;
+      }
+
+      .bgimg-2 {
+        background-image: url("/static/images/marita-kavelashvili.jpg");
+        min-height: 400px;
+      }
+
+      .bgimg-3 {
+        background-image: url("/static/images/aditya-chinchure.jpg");
+        min-height: 400px;
+      }
+
+      .caption {
+        position: absolute;
+        left: 0;
+        top: 50%;
+        width: 100%;
+        text-align: center;
+        color: #000;
+      }
+
+      .caption span.border {
+        background-color: #111;
+        color: #fff;
+        padding: 18px;
+        font-size: 25px;
+        letter-spacing: 10px;
+      }
+
+      h3 {
+        letter-spacing: 5px;
+        text-transform: uppercase;
+        font: 20px "Lato", sans-serif;
+        color: #111;
+      }
+
+      /* Turn off parallax scrolling for tablets and phones */
+      @media only screen and (max-device-width: 1024px) {
+        .bgimg-1,
+        .bgimg-2,
+        .bgimg-3 {
+          background-attachment: scroll;
+        }
+        #container #viewSummary :hover {
+          color: red;
+        }
+
+        #ex1Slider .slider-selection {
+          background: #bababa;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top" style="height: 30px">
+      <div class="container">
+        <div class="navbar-header">
+          <button
+            type="button"
+            class="navbar-toggle collapsed"
+            data-toggle="collapse"
+            data-target="#navbar"
+            aria-expanded="false"
+            aria-controls="navbar"
+          >
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+
+          <a class="navbar-brand" href="#">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="25"
+              height="25"
+              fill="currentColor"
+              class="bi bi-house-door-fill"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5z"
+              />
+            </svg>
+          </a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li class="nav-item">
+              <a
+                class="nav-link active"
+                aria-current="e"
+                href="summary_stats.html"
+                ><svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="25"
+                  height="25"
+                  fill="currentColor"
+                  class="bi bi-file-bar-graph-fill"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    d="M12 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm-2 11.5v-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm-2.5.5a.5.5 0 0 1-.5-.5v-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5h-1zm-3 0a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-1z"
+                  /></svg
+              ></a>
+            </li>
+            <li>
+              <select
+                name="objectiveDropdown"
+                id="objectiveDropdown"
+                style="margin: -32px; z-index: 10"
+                class="btn btn-secondary dropdown-toggle"
+              >
+                <option value="1">Minimize Stops</option>
+                <option value="2">Minimize Distance</option>
+                <option value="3">Prioritize Reliable Stations</option>
+              </select>
+            </li>
+            <li>
+              <label
+                for="carRange"
+                id="carRangeLabel"
+                style="
+                  color: gray;
+                  margin-top: -70px;
+                  margin-left: 200px;
+                  width: 200px;
+                  white-space: nowrap;
+                "
+                >Car Range (in Miles):</label
+              >
+            </li>
+
+            <li>
+              <input
+                class="btn btn-secondary dropdown-toggle"
+                style="
+                  margin-top: -65px;
+                  margin-left: 185px;
+                  width: 70px;
+                  height: 28px;
+                  z-index: 101;
+                "
+                type="number"
+                id="carRange"
+                name="carRange"
+                min="10"
+                max="300"
+                value="100"
+              />
+            </li>
+            <li>
+              <a
+                id="viewSummary"
+                class="btn btn-primary"
+                style="
+                  display: none;
+                  margin-top: 11px;
+                  position: absolute;
+                  left: 700px;
+                  height: 32px;
+                  width: 130px;
+                  line-height: 0px;
+                  color: white;
+                "
+                a
+                href="#summary_section"
+              >
+                Summary
+              </a>
+            </li>
+            <li>
+              <button
+                id="newTripButton"
+                class="btn btn-primary"
+                style="
+                  display: none;
+                  margin-top: -4.5px;
+                  position: absolute;
+                  left: 845px;
+                  line-height: 0px;
+                  width: 130px;
+                "
+              >
+                Plan another trip
+              </button>
+            </li>
+            <li>
+              <div style="margin-left: 500px">
+                <label style="margin-top: 3px" for="charger_selector"
+                  >Number of Chargers:
+                  <span id="ex6CurrentSliderValLabel">
+                    <span id="ex6SliderVal">20</span></span
+                  ></label
+                >
+                <input
+                  style="margin-top: -7px"
+                  type="range"
+                  class="custom-range"
+                  name="charger_selector"
+                  id="charger_selector"
+                  onchange="mytestfuction()"
+                  max="40"
+                  min="1"
+                  step="1"
+                />
+              </div>
+            </li>
+          </ul>
+        </div>
+        <!--/.nav-collapse -->
+      </div>
+    </nav>
+    <div id="map" style="height: 900px; margin-top: -20px"></div>
+
+    <!-- Summary Statistics of Given Trip -->
+    <div class="bgimg-1" id="summary_section">
+      <div class="caption">
+        <span class="border">TRIP SUMMARY</span>
+      </div>
+    </div>
+    <div
+      style="
+        color: #777;
+        background-color: white;
+        text-align: center;
+        padding: 50px 80px;
+        text-align: justify;
+      "
+    >
+      <h3 style="text-align: center">Start and End Locations</h3>
+      <div style="display: flex; text-align: center; margin-left: 40%">
+        <p
+          id="start_content"
+          style="display:flex; text-align:text-align:center;font-weight: bold; "
+        ></p>
+      </div>
+      <div style="display: flex; text-align: center; margin-left: 40%">
+        <p
+          id="end_content"
+          style="display: flex; text-align: center; font-weight: bold"
+        ></p>
+      </div>
+    </div>
+    <div class="bgimg-2">
+      <div class="caption">
+        <span
+          class="border"
+          style="background-color: transparent; font-size: 25px; color: #f7f7f7"
+          >DETAILS</span
+        >
+      </div>
+    </div>
+    <div style="position: relative">
+      <div
+        style="
+          color: #ddd;
+          background-color: #282e34;
+          text-align: center;
+          padding: 50px 80px;
+          text-align: justify;
+        "
+      >
+        <p id="details" style="text-align: center"></p>
+      </div>
+    </div>
+    <div class="bgimg-3">
+      <div class="caption">
+        <span
+          class="border"
+          style="background-color: transparent; font-size: 25px; color: #f7f7f7"
+          >SUMMARY</span
+        >
+      </div>
+    </div>
+    <div style="position: relative">
+      <div
+        style="
+          color: #ddd;
+          background-color: #282e34;
+          text-align: center;
+          padding: 50px 80px;
+          text-align: justify;
+        "
+      >
+        <p id="summary" style="text-align: center"></p>
+      </div>
+    </div>
+    <div id="tripSummary">
+      <button
+        onclick="topFunction()"
+        id="topBtn"
+        title="Go to top"
+        class="btn btn-outline-secondary"
+        style="
+          text-align: center;
+          margin: 0 auto;
+          color: gray;
+          text-shadow: zpx 0 #888888;
+          letter-spacing: 1px;
+          font-weight: bold;
+          position: fixed;
+          bottom: 26px;
+          right: 39px;
+          z-index: 98;
+          padding: 21px;
+        "
+      >
+        TOP
+      </button>
+    </div>
+
+    <script type="text/javascript">
+
+          var markers = {};
+          var all_node_ids = [];
+          var all_station_dict = {};
+          var num_of_planned_trips = 0;
+          var polyline;
+      		var station;
+      		var station_id;
+      		var number_of_dc_chargers;
+      		var latitude;
+      		var longitude;
+      		var station_name;
+      		var street_address;
+      		var city;
+      		var state;
+      		var zip_code;
+      		var full_address;
+          var num_selected_stations = 20
+          var location_icon = "<svg xmlns='http://www.w3.org/2000/svg' width='25' height='25' fill='currentColor' class='bi bi-geo-alt' viewBox='0 0 16 16'> <path d='M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z'/> <path d='M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z'/></svg>"
+      		var maxBounds = L.latLngBounds( L.latLng(5.499550, -167.276413), //Southwest
+      										L.latLng(83.162102, -52.233040)  //Northeast
+      										);
+
+
+
+                      // --------------------- 1. INITIAL MAP SET-UP ------------------------------
+                      // The first parameter are the coordinates of the center of the map (center in California)
+                       	// The second parameter is the zoom level
+                       	var map = L.map('map',{"preferCanvas":true,
+      								   "maxBounds": maxBounds,
+      								   "maxZoom": 10}).setView([36.7783, -119.4179], 6);
+
+                       	// {s}, {z}, {x} and {y} are placeholders for map tiles
+                       	// {x} and {y} are the x/y of where you are on the map
+                       	// {z} is the zoom level
+                      	// {s} is the subdomain of cartodb
+                       	var layer = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+                       	{
+                         	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+                       	});
+
+                       	// Now add the layer onto the map
+                       	map.addLayer(layer);
+      			map.scrollWheelZoom.disable();
+
+
+                      // --------------------- 2. OVERLAYING STATION DATA FROM PYTHON DB ------------------------------
+
+                      // Custom icons found here: https://github.com/pointhi/leaflet-color-markers
+                      var blueIcon = new L.Icon({
+                        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+                      //  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34],
+                        shadowSize: [41, 41]
+                      });
+
+                      var redIcon = new L.Icon({
+                        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+                        //shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34],
+                        shadowSize: [41, 41]
+                      });
+
+
+                      		// Testing access to data from Flask (passed into render_template() in routes.py)
+                      		//stations = {{ data }};
+                      		stations = JSON.parse('{{ data | tojson | safe}}')
+                      		num_of_stations = {{ n }};
+
+                      		// Initialize both station ids to 0 to indicate no station clicked yet
+                      		var station_id_1 = 0; //39874;
+                      var station_id_2 = 0; //39871;
+
+                      function remove_all_markers() {
+                      	for (var i = 0; i < all_node_ids.length; i++) {
+                      		var node_id = all_node_ids[i];
+                          	var marker = markers[node_id];
+
+                          	// Remove marker from the map
+                          	map.removeLayer(marker);
+
+                      	}
+                      }
+
+                      // Return all markers to blue and delete the trip summary below the map
+                      function reset_map() {
+                      	// Remove polyline
+                        if (polyline) {
+                          map.removeLayer(polyline);
+                        }
+                      	
+
+                      	for (var i = 0; i < all_node_ids.length; i++) {
+                      		var node_id = all_node_ids[i];
+                          	var marker = markers[node_id];
+
+                          	// Remove marker from app and then redraw it as blue icon
+                          	map.removeLayer(marker);
+                          	marker.setIcon(blueIcon)
+                              if(all_station_dict[node_id]["number_of_dc_chargers"] > num_selected_stations){
+                                      marker.addTo(map)
+                                  }
+
+                      	}
+                      	// Reset clicked station ids
+                      	station_id_1 = 0;
+                      	station_id_2 = 0;
+
+                      	// Clear out the trip summary and details
+                      	var summary = document.getElementById("summary");
+                      	summary.innerHTML = "";
+
+                      	var details = document.getElementById("details");
+                      	details.innerHTML = "";
+                      }
+
+                      function compute_shortest_path() {
+                      	var carRange = document.getElementById("carRange").value;
+
+                      	var objectiveDropdownValue = document.getElementById("objectiveDropdown").value;
+
+                      	// Make call to Python backend code
+                      	fetch('/compute_shortest_path?station1='+station_id_1 +'&station2='+station_id_2 +'&range='+carRange+'&objective='+objectiveDropdownValue)
+                      	  .then((response) => {
+                      	    return response.json();
+                      	  })
+                      	  .then((myJson) => {
+                      	  	// First value representing list of all node ids traversed;
+                      	  	// Second value in  list is our string of the path;
+                      	  	// Third value in list is the cost of the path
+                      	  		// (will equal total_distance if trip objective is to minimize distance,
+                      	  		//  will equal number_of_stops+1 if objective is to minimize stops because it includes the final edge cost of 1 to the destination);
+                      	  	// Fourth value in list is a list of all traveled distances;
+                      	  	// Fifth value in list is total distance traveled;
+                      	  	// Sixth value in list is number of stops
+
+                      	    var node_ids_on_path = myJson[0];
+                      	    var str_of_path = myJson[1];
+                      	    var cost_of_path = myJson[2];
+                      	    var edges_on_path = myJson[3];
+                      	    var total_distance = myJson[4];
+                      	    var number_of_stops = myJson[5];
+
+                      	    var latlngs = Array();
+                            // Check to see if there are any nodes in the path (if not, there is no path)
+                            if (node_ids_on_path.length == 0) {
+                              alert("No path between station " + station_id_1 + " and station " + station_id_2 + "!");
+                              reset_map();
+                            } else {
+                      	    // Clear all markers so we can draw the new ones in red
+                      	    remove_all_markers();
+
+                      	    for (var i = 0; i < node_ids_on_path.length; i++) {
+                      	    	var node_id = node_ids_on_path[i];
+                      	    	var marker = markers[node_id];
+                      	    	var markerLocation = marker.getLatLng();
+                      	    	// Add lat/long to list for drawing the line between all points
+                      	    	latlngs.push(markerLocation);
+
+
+                      	    	// Change color of icon to red (have to remove marker from app and then redraw it)
+                      	    	map.removeLayer(marker);
+
+                      	    	marker.setIcon(redIcon).addTo(map);
+
+                      	    }
+
+                      	    // Draw line for all points
+                      	    polyline = L.polyline(latlngs, {color: 'red'}).addTo(map);
+
+                      	    // Add summary stats for the trip below the map
+                      	    //var summary = document.getElementById("tripSummary");
+
+                      	    // We must build up the string of HTML that goes in this summary
+                      	    var node_id = node_ids_on_path[0]
+                      			var start_content = document.getElementById("start_content")
+                      			var end_content = document.getElementById("end_content")
+                      			var details = document.getElementById("details")
+                      			var summary = document.getElementById("summary")
+                            var next_icon = "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-arrow-down' viewBox='0 0 16 16'><path fill-rule='evenodd' d='M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z'/></svg>"
+
+                            end_content.innerHTML = location_icon + "<strong>Ending Location:&nbsp</strong>"
+                      			start_content.innerHTML = location_icon + "<strong>Starting Location:&nbsp</strong>" + all_station_dict[node_id].full_address
+
+      						          details.innerHTML += "<p>" + location_icon + "<strong>Starting Location: " + all_station_dict[node_ids_on_path[0]].full_address + "</strong></p>"
+
+                      	    for (var i = 1; i < node_ids_on_path.length; i++) {
+                      	    	node_id = node_ids_on_path[i];
+
+                      	    	// Add arrow with mileage to next location
+                      	    	details.innerHTML += "<p style='margin-left:3%;'>" + edges_on_path[i-1].toFixed(2) + " miles" + "</p>"
+
+                      	    	details.innerHTML += "<p style='margin-left:3%;'>" + next_icon + "</p>"
+
+                      	    	if (i == node_ids_on_path.length-1) {
+                								end_content.innerHTML += " " + all_station_dict[node_id].full_address
+                								details.innerHTML += "<p>" + location_icon + "<strong>Ending Location: " + all_station_dict[node_id].full_address + "</strong></p>"
+                      	    	}
+                      	    	else {
+                      	    		details.innerHTML += "<p><strong>Stop #" + i + ":</strong> " + all_station_dict[node_id].full_address + "</p>"
+
+                      	    	}
+                      	    }
+
+                      	    summary.innerHTML += "<p><strong>Number of Charging Stops:</strong> " + number_of_stops + "</p>"
+                      	    summary.innerHTML += "<p><strong>Total Distance Traveled:</strong> " + total_distance.toFixed(2) + " miles" + "</p>"
+
+                    				hide_show_trip_btn()
+              						  hide_show_summary_btn()
+                      	  }});
+              }
+
+      		function add_markers() {
+      			// Loop through all stations and add markers to the graph for each
+      			   //
+                      		for (var i = 0; i < stations.length; i++) {
+                      			station = stations[i];
+
+                      			// station is a list of four values: [id integer, number_of_dc_chargers real, latitude real, longitude real]
+                      			station_id = station[0];
+                      			number_of_dc_chargers = station[1];
+                      			latitude = station[2];
+                      			longitude = station[3];
+                      			station_name = station[4];
+                      			street_address = station[5];
+                      			city = station[6];
+                      			state = station[7];
+                      			zip_code = station[8];
+
+                      			full_address = street_address + ", " + city + ", " + state + " " + zip_code;
+
+                      			all_node_ids.push(station_id);
+
+                      			all_station_dict[station_id] = {"number_of_dc_chargers": number_of_dc_chargers,
+                      											"latitude": latitude,
+                      											"longitude": longitude,
+                      											"station_name": station_name,
+                      											"full_address": full_address}
+
+
+
+
+                                        // We start by writing a marker for each station
+                                        var oneMarker = L.marker([latitude, longitude], title=station_id)
+                                          .setIcon(blueIcon)
+                                      .bindPopup("<strong>" + "Station Address: </strong>" + full_address + "</br>" +
+                                            "<strong>" + "Station ID: </strong>" + station_id + "</br>" +
+                                            "<strong>Number of Chargers: </strong>" + number_of_dc_chargers)
+                                      .on('mouseover', function (e) {
+                                              this.openPopup();
+                                          })
+                                          .on('mouseout', function (e) {
+                                              this.closePopup();
+                                          });
+
+                                    oneMarker.properties = {'station_id': station_id};
+
+                                    oneMarker.on("click", function(e) {
+                                      e.target.setIcon(redIcon); // change icon color on click
+                                      var clicked_id = e.target.properties.station_id;
+                                      if (station_id_1 == 0) {
+                                        // Signifies no clicks yet, so we update the station 1 variable
+                                        station_id_1 = clicked_id;
+                                      }
+                                      else if (station_id_2 == 0) {
+                                        // Signifies no clicks yet, so we update the station 2 variable and compute the shortest path
+                                        station_id_2 = clicked_id;
+                                        num_of_planned_trips += 1;
+                                        compute_shortest_path();
+
+
+                                        // show "Plan Another Trip" button after the first path is computed
+                                        if (num_of_planned_trips < 2) {
+                                          var btn = document.getElementById("newTripButton");
+                                          btn.onclick = function() {
+                                            reset_map();
+                                      hide_show_trip_btn()
+                                    hide_show_summary_btn()
+                                          }
+                                        }
+                                      }
+
+                                    });
+                                  if(all_station_dict[station_id]["number_of_dc_chargers"] > num_selected_stations){
+                                      oneMarker.addTo(map)
+                                  }
+                                      markers[station_id] = oneMarker;
+
+          }
+
+      		}
+      		window.onload = add_markers();
+
+
+        function hide_show_trip_btn(){
+            		var btn = document.getElementById("newTripButton")
+
+             		if(btn.style.display === "none"){
+       	     		btn.style.display = "block"
+           	 		}
+            			else{
+            			btn.style.display = "none"
+            			}
+            		}
+
+      function hide_show_summary_btn(){
+            		var btn = document.getElementById("viewSummary")
+
+             		if(btn.style.display === "none"){
+       	     		btn.style.display = "block"
+           	 		}
+            			else{
+            			btn.style.display = "none"
+            			}
+            		}
+
+      function mytestfuction(){
+
+        var slider_value = document.getElementById("charger_selector").value
+        document.getElementById("ex6SliderVal").textContent = slider_value;
+        num_selected_stations = slider_value
+        remove_all_markers()
+        add_markers()
+      }
+
+      var mybutton = document.getElementById("topBtn");
+
+      // When the user scrolls down 20px from the top of the document, show the button
+      window.onscroll = function() {scrollFunction()};
+
+      function scrollFunction() {
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+          mybutton.style.display = "block";
+        } else {
+          mybutton.style.display = "none";
+        }
+      }
+
+      // When the user clicks on the button, scroll to the top of the document
+      function topFunction() {
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+      }
+    </script>
+  </body>
+</html>

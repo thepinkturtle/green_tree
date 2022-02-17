@@ -1,0 +1,215 @@
+Number of location pairs tested: 1000
+Car range: 150
+
+Getting all stations from the database...
+	Number of Edges Less Than 150 miles: 463795
+	Number of stations: 1475
+
+Getting all possible station pair combinations...
+	Total Number of Station Pairs: 1087075
+	Randomly sampling 1000 of these 1087075 pairs
+
+
+-------Objective = Fewest Stops-------
+
+No path between 46721 and 193583
+No path between 158948 and 193583
+No path between 99176 and 193583
+No path between 186209 and 193583
+No path between 63881 and 193583
+Average Number of Stops Per Trip: 1.0663316582914573 stops
+Average Number of Minimum Possible Stops Per Trip: 1.0381909547738692 stops
+Number of Stops Added:
+   Mean: 0.02814070351758794
+   Standard Deviation: 0.16545790464880236
+   Median: 0
+   Max: 1
+   Min: 0
+Average Distance Per Trip: 229.60945554747428 miles
+Average Minimum Straightline Distance Per Trip: 219.67104383351585 miles
+Miles Added:
+   Mean: 9.938411713958892
+   Standard Deviation: 14.654204873859666
+   Median: 1.65974276743799
+   Max: 136.0196962286184
+   Min: 0.0
+
+
+-------Objective = Shortest Distance-------
+
+No path between 46721 and 193583
+No path between 158948 and 193583
+No path between 99176 and 193583
+No path between 186209 and 193583
+No path between 63881 and 193583
+Average Number of Stops Per Trip: 1.3457286432160804 stops
+Average Number of Minimum Possible Stops Per Trip: 1.0381909547738692 stops
+Number of Stops Added:
+   Mean: 0.3075376884422111
+   Standard Deviation: 0.5113337860745871
+   Median: 0
+   Max: 2
+   Min: 0
+Average Distance Per Trip: 219.97376895961787 miles
+Average Minimum Straightline Distance Per Trip: 219.67104383351585 miles
+Miles Added:
+   Mean: 0.30272512610234886
+   Standard Deviation: 1.7302307816842017
+   Median: 0.004009915548181198
+   Max: 48.8094013193911
+   Min: 0.0
+
+
+-------Objective = Reliability-------
+
+No path between 46721 and 193583
+No path between 158948 and 193583
+No path between 99176 and 193583
+No path between 186209 and 193583
+No path between 63881 and 193583
+Average Number of Stops Per Trip: 1.1678391959798995 stops
+Average Number of Minimum Possible Stops Per Trip: 1.0381909547738692 stops
+Number of Stops Added:
+   Mean: 0.12964824120603016
+   Standard Deviation: 0.3449482754863228
+   Median: 0
+   Max: 2
+   Min: 0
+Average Distance Per Trip: 230.54869220995448 miles
+Average Minimum Straightline Distance Per Trip: 219.67104383351585 miles
+Miles Added:
+   Mean: 10.877648376438845
+   Standard Deviation: 26.111712826216547
+   Median: 0.9121179713715719
+   Max: 231.8046562532836
+   Min: 0.0
+michaelholt@MacBook-Pro cse6242_project % python3 run_experiment.py
+
+
+Number of location pairs tested: 10000
+Car range: 150
+
+Getting all stations from the database...
+	Number of Edges Less Than 150 miles: 463795
+	Number of stations: 1475
+
+Getting all possible station pair combinations...
+	Total Number of Station Pairs: 1087075
+	Randomly sampling 10000 of these 1087075 pairs
+
+
+-------Objective = Fewest Stops-------
+
+No path between 46721 and 193583
+No path between 158948 and 193583
+No path between 99176 and 193583
+No path between 186209 and 193583
+No path between 63881 and 193583
+No path between 156072 and 193583
+No path between 160569 and 193583
+No path between 179590 and 193583
+No path between 191934 and 193583
+No path between 193583 and 194765
+No path between 153425 and 193583
+No path between 192503 and 193583
+No path between 191781 and 193583
+No path between 192562 and 193583
+No path between 191829 and 193583
+No path between 158772 and 193583
+No path between 102028 and 193583
+No path between 192044 and 193583
+No path between 192104 and 193583
+Average Number of Stops Per Trip: 1.0434826169722473 stops
+Average Number of Minimum Possible Stops Per Trip: 1.0075142771265404 stops
+Number of Stops Added:
+   Mean: 0.03596833984570684
+   Standard Deviation: 0.18622054877244174
+   Median: 0
+   Max: 1
+   Min: 0
+Average Distance Per Trip: 227.87936841406915 miles
+Average Minimum Straightline Distance Per Trip: 217.94785454979524 miles
+Miles Added:
+   Mean: 9.931513864274638
+   Standard Deviation: 15.385274711859394
+   Median: 1.3515869048000013
+   Max: 136.0196962286184
+   Min: 0.0
+
+
+-------Objective = Shortest Distance-------
+
+No path between 46721 and 193583
+No path between 158948 and 193583
+No path between 99176 and 193583
+No path between 186209 and 193583
+No path between 63881 and 193583
+No path between 156072 and 193583
+No path between 160569 and 193583
+No path between 179590 and 193583
+No path between 191934 and 193583
+No path between 193583 and 194765
+No path between 153425 and 193583
+No path between 192503 and 193583
+No path between 191781 and 193583
+No path between 192562 and 193583
+No path between 191829 and 193583
+No path between 158772 and 193583
+No path between 102028 and 193583
+No path between 192044 and 193583
+No path between 192104 and 193583
+Average Number of Stops Per Trip: 1.315699829676385 stops
+Average Number of Minimum Possible Stops Per Trip: 1.0075142771265404 stops
+Number of Stops Added:
+   Mean: 0.3081855525498447
+   Standard Deviation: 0.5011031158365211
+   Median: 0
+   Max: 3
+   Min: 0
+Average Distance Per Trip: 218.23105087839804 miles
+Average Minimum Straightline Distance Per Trip: 217.94785454979524 miles
+Miles Added:
+   Mean: 0.2831963286028662
+   Standard Deviation: 1.804042041706546
+   Median: 0.002028068207494016
+   Max: 68.55558396336289
+   Min: 0.0
+
+
+-------Objective = Reliability-------
+
+No path between 46721 and 193583
+No path between 158948 and 193583
+No path between 99176 and 193583
+No path between 186209 and 193583
+No path between 63881 and 193583
+No path between 156072 and 193583
+No path between 160569 and 193583
+No path between 179590 and 193583
+No path between 191934 and 193583
+No path between 193583 and 194765
+No path between 153425 and 193583
+No path between 192503 and 193583
+No path between 191781 and 193583
+No path between 192562 and 193583
+No path between 191829 and 193583
+No path between 158772 and 193583
+No path between 102028 and 193583
+No path between 192044 and 193583
+No path between 192104 and 193583
+Average Number of Stops Per Trip: 1.1471796413185051 stops
+Average Number of Minimum Possible Stops Per Trip: 1.0075142771265404 stops
+Number of Stops Added:
+   Mean: 0.13966536419196474
+   Standard Deviation: 0.35295864891986256
+   Median: 0
+   Max: 2
+   Min: 0
+Average Distance Per Trip: 228.2370621146682 miles
+Average Minimum Straightline Distance Per Trip: 217.94785454979524 miles
+Miles Added:
+   Mean: 10.289207564871768
+   Standard Deviation: 23.43635530441248
+   Median: 0.940447877799869
+   Max: 231.8046562532836
+   Min: 0.0
